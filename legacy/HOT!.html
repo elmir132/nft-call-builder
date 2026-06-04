@@ -1,0 +1,335 @@
+<!-- <!DOCTYPE html>
+<html>
+  <head>
+    <title>My NFT Wallet</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        var proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+        var walletAddress = ''; // initialize an empty wallet address variable
+        
+        function updateData() { 
+          walletAddress = $('#input-wallet').val(); // update the wallet address variable with user input
+          var walletUrl = `https://api.opensea.io/api/v1/assets?owner=${walletAddress}&order_direction=desc&offset=0&limit=100`; // replace with your API endpoint
+        
+          $.ajax({
+            url: proxyUrl + walletUrl,
+            type: 'GET',
+            success: function(data){
+              // Clear the current cards
+              $("#nftCards").empty();
+              
+              // Loop through each NFT in the wallet
+              data.assets.forEach(function(nft) {
+                var nftName = nft.name;
+                var nftImage = nft.image_url;
+                var nftPrice = nft.sell_orders && nft.sell_orders[0] ? nft.sell_orders[0].current_price : 'Not for sale';
+                
+                // Create a card for the NFT
+                var nftCard = "<div class='card'><img src='" + nftImage + "' alt='" + nftName + " image'><h3>" + nftName + "</h3><p>Price: " + nftPrice + "</p></div>";
+                
+                // Add the card to the container
+                $("#nftCards").append(nftCard);
+              });
+            },
+            error: function(xhr, status, error) {
+              console.log('Error: ' + error);
+            }
+          });
+        }
+        
+        // Update the NFTs on page load
+        updateData();
+        
+        // Update the NFTs when the "Update" button is clicked
+        $("#update-btn").click(function() {
+          updateData();
+        });
+      });
+    </script>
+    <style>
+      .card {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+        margin: 10px;
+        width: 300px;
+        display: inline-block;
+        vertical-align: top;
+      }
+      .card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        margin-bottom: 10px;
+      }
+      .card h3 {
+        font-size: 20px;
+        margin: 0 0 5px 0;
+      }
+      .card p {
+        font-size: 16px;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>My NFT Wallet</h1>
+    <div id="nftCards"></div>
+    <input type="text" id="input-wallet" placeholder="Enter your wallet address">
+    <button onclick="updateData()" id="update-btn">Update</button>
+  </body>
+</html>
+ -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>New Collections</title>
+  <link rel="stylesheet" type="text/css" href="myapp.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      background-color: #1e2235
+    }
+
+   #cards-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+  .card {
+      width: 300px;
+      height: 400px;
+      margin: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background-color: lightblue;
+        border-radius: 15px;
+
+        opacity: 0.73
+    }
+.card:hover {
+  opacity: 1;
+}
+
+
+    .card-image {
+      flex: 1;
+      background-position: center;
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
+    .card-text {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 0 0 120px;
+    }
+
+    .card-name {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .card-floor-price {
+      font-size: 18px;
+      color: #444444;
+      text-align: right;
+    }
+    .sol-price {
+      position: fixed;
+      top: 5%;
+      right: 5%;
+      font-weight: 50px;
+      font-weight: bold;
+      color: lightblue; /*#be3455*/
+      font-size: 25px;
+      font-family: monospace;
+      backdrop-filter: blur(85px);
+
+    }
+
+  </style>
+
+
+
+</head>
+<body>
+
+<nav class="header-nav container flex-container" >
+    <header>
+   <div class="header">
+      <h1 class="logo-link logo" ><a href="myapi.html">Elmirc𐌀n</a></h1>
+      <ol class="header-menu flex-container">
+        <li style="backdrop-filter: blur(15px);"><a href="Top.html">HOT!</a></li>
+        <li style="backdrop-filter: blur(15px);"><a href="wallet.html">Watchlist</a></li>
+        <li style="backdrop-filter: blur(15px);"><a href="flip.html">Flip</a></li>
+      </div>
+    </div>
+    <div class="header-background"></div>
+    <div style="padding: 50px">
+  </header>
+</nav>
+
+
+
+  <div id="sol-price" class="sol-price">Sol: Loading...</div>
+
+  <div id="sol-volume" class="sol-volume">Volume: Loading...</div>
+
+
+
+
+
+  <script>
+    fetch('https://api-mainnet.magiceden.io/volumes')
+    .then(response => response.json())
+    .then(data => {
+      const volumeData = data.last24Hrs;
+
+      const solVolumeContainer = document.getElementById('sol-volume');
+      solVolumeContainer.textContent = `Volume 24h: ${volumeData}`;
+    })
+
+
+    .catch(error => console.error(error));
+
+
+
+
+     fetch('https://price.jup.ag/v1/price?id=sol')
+      .then(response => response.json())
+      .then(data => {
+        const solPriceElement = document.getElementById('sol-price');
+        const solPrice = data.data.price;
+        solPriceElement.textContent = `Sol: ${solPrice}`;
+      })
+      .catch(error => console.error(error));
+
+
+
+    fetch('https://api-mainnet.magiceden.dev/new_collections?edge_cache=true')
+      .then(response => response.json())
+      .then(data => {
+        const collections = data.collections;
+        const cardsContainer = document.getElementById('cards-container');
+        collections.forEach(collection => {
+          const card = document.createElement('div');
+          card.className = 'card';
+
+          const imageContainer = document.createElement('div');
+          imageContainer.className = 'card-image';
+          imageContainer.style.backgroundImage = `url(${collection.image})`;
+
+          const textContainer = document.createElement('div');
+          textContainer.className = 'card-text';
+
+          const nameContainer = document.createElement('div');
+          nameContainer.className = 'card-name';
+          nameContainer.textContent = collection.name;
+          textContainer.appendChild(nameContainer);
+
+          const descContainer = document.createElement('div');
+          descContainer.className = 'card-desc';
+          descContainer.textContent = collection.description;
+          textContainer.appendChild(descContainer);
+
+          const totalItemsContainer = document.createElement('div');
+          totalItemsContainer.className = 'card-floor-price';
+          totalItemsContainer.textContent = `Total Items: ${collection.totalItems}`;
+          textContainer.appendChild(totalItemsContainer);
+
+          card.appendChild(imageContainer);
+          card.appendChild(textContainer);
+
+          cardsContainer.appendChild(card);
+        });
+      })
+      .catch(error => console.error(error));
+  </script>
+
+  <div id="cards-container" style="margin-top: 100px"></div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
