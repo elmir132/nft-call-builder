@@ -1,0 +1,64 @@
+.loader {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 1;
+      transition: opacity 0.3s ease-in;
+    }
+
+    .loader h1 {
+      margin: 0;
+      padding: 0;
+      text-transform: uppercase;
+      font-size: 10em;
+      color: rgba(255, 255, 255, 0.1);
+      background-image: url(https://t3.ftcdn.net/jpg/00/51/78/34/240_F_51783408_KQxz37dKLxTpRVRexvcVAbGADTiNecio.jpg);
+      background-repeat: repeat-x;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: animate 15s linear infinite;
+    }
+
+    @keyframes animate {
+      0% {
+        background-position: left 0px top 80px;
+      }
+      40% {
+        background-position: left 800px top -50px;
+      }
+      80% {
+        background-position: left 1800px top -50px;
+      }
+      100% {
+        background-position: left 2400px top -50px;
+      }
+    }
+
+    /* Hide the loader when the page content is shown */
+    body:not(.loading) .loader {
+      opacity: 0;
+
+    }
+
+    /* Show the page content when loader is hidden */
+    body:not(.loading) .hidden-content {
+      display: block;
+
+              background-color: #1e2235; 
+    }
+
+    /* Hide the page content by default */
+    .hidden-content {
+      display: none;
+    }
+
+    body{
+      background-color: #1e2235; 
+
+      
+    }
