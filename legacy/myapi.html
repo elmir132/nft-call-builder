@@ -1,0 +1,297 @@
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="myapp.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="auo.js"></script>
+
+
+</head>
+
+<div id="sol-volume" class="sol-volume">Volume: Loading...</div>
+<a href="https://cors-anywhere.herokuapp.com/corsdemo"><button class="sol-allow" id= "update-btn" style="width: 10%; background-color:#1e2235; outline: solid; ">Allow Cors Policy!</button></a>
+
+
+<body style="background-color: #1e2235">
+
+
+
+
+
+
+  <nav class="header-nav container flex-container" >
+    <header>
+     <div class="header">
+      <h1 class="logo-link logo" >Elmirc𐌀n</h1>
+      <ol class="header-menu flex-container">
+        <li><a href="HOT!.html">Top!</a></li>
+        <li><a href="wallet.html">Watchlist</a></li>
+        <li><a href="flip.html">Flip</a></li>
+      </div>
+    </div>
+    <div class="header-background"></div>
+    <div style="padding: 50px">
+    </header>
+  </nav>
+
+  <!---    Input bar      ---->
+
+  <div id="input" >
+    <input type="text" id="input-degods" placeholder="Enter Degods URL">
+    <button onclick="updateIframe()" id= "update-btn">Update</button>
+  </div>
+
+  <!---    Input bar      ---->
+
+
+
+  <!---    Pop up      ---->
+
+  <div id="popup-container">
+    <div id="popup-box">
+      <iframe style="width: 100%; height: 100%" src="https://magiceden.io/marketplace/degods?activeTab=stats"></iframe>
+      <button id="close-popup" class="close-button" style=" position:fixed;">X</button>
+    </div>
+  </div>
+  
+
+
+
+
+  <!---    Changing the collection      ---->
+  <script>
+
+  </script>
+  <!---    Changing the collection      ---->
+
+
+
+
+  <!---    Pop up      ---->
+  <div id="sol-price" class="sol-price">Sol: Loading...</div>
+
+
+
+  <div class="center" id="open-popup">
+    <ol>
+     <li><h1> Floor price:</h1><div id="floorPrice"></div></li>
+     <li><h1> Listed Count:</h1><div id="listedCount"></div></li>
+   </ol>
+   <div id="imageContainer"></div>
+ </div>
+
+ <!---    Table of the tags and names      ---->
+
+ <div >
+  <table id="collections-table" >
+    <thead>
+      <tr>
+        <th>Symbol</th>
+        <th>Name</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>
+
+<!---    Table of the tags and names      ---->
+
+<script>
+
+
+
+
+
+//  Getting info from api, and storing it in an object  //
+
+   // Getting info from API and storing it in an object
+   $(document).ready(function() {
+    var proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+    var targetUrl = 'https://api-mainnet.magiceden.dev/v2/collections/degods/stats';
+
+    function updateData() {
+      $.ajax({
+        url: targetUrl,
+        type: 'GET',
+        success: function(data) {
+          var floorPrice = data.floorPrice;
+          $("#floorPrice").text((floorPrice/ 1000000000).toFixed(1) || "Will be printed");
+          var listedCount = data.listedCount;
+          $("#listedCount").text(listedCount || "Will be printed");
+
+          var degods = $('#input-degods').val().trim().toLowerCase();
+          var apiUrl = 'https://api-mainnet.magiceden.dev/v2/collections/';
+
+          $.ajax({
+            url: apiUrl,
+            type: 'GET',
+            success: function(collections) {
+              var collection = collections.find(function(c) {
+                return c.name.trim().toLowerCase() === degods;
+              });
+              if (collection) {
+                var image = collection.image;
+                var symbol = collection.symbol;
+                $("#imageContainer").html(
+                  "<img src='" + image + "' alt='" + symbol + " collection image'>"
+                  );
+                updateIframe();
+              } else {
+                $("#imageContainer").html(
+                  "<img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5k-h1yOsLseJzuVH_PkFGSGDjUhhy1hwCDA&usqp=CAU' alt='Collection not found'>"
+                  );
+                $("#popup-box iframe").attr("src", "");
+              }
+            },
+            error: function(xhr, status, error) {
+              console.log('Error: ' + error);
+            }
+          });
+        },
+        error: function(xhr, status, error) {
+          console.log('Error: ' + error);
+        }
+      });
+    }
+
+    function updateDegods() {
+      var degods = $('#input-degods').val().trim().toLowerCase();
+      const baseUrl1 = 'https://api-mainnet.magiceden.dev/v2/collections/';
+      const collectionTag = collectionsMap[degods];
+      targetUrl = baseUrl1 + collectionTag + '/stats';
+
+      updateData();
+    }
+
+    // Bind keypress event to the input field
+    $('#input-degods').on('keypress', function(e) {
+      if (e.which === 13) {
+        updateDegods();
+      }
+    });
+
+    // Bind click event to the update button
+    $('#update-btn').click(function() {
+      updateDegods();
+    });
+
+    // Trigger update on Enter key or Update button click
+    $(document).on('keypress click', function(e) {
+      if (e.type === 'keypress' && e.which === 13) {
+        updateDegods();
+      } else if (e.type === 'click' && e.target.id === 'update-btn') {
+        updateDegods();
+      }
+    });
+
+    // Initial values
+    $("#floorPrice").text("Will be printed");
+    $("#listedCount").text("Will be printed");
+    $("#imageContainer").html(
+      "<img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5k-h1yOsLseJzuVH_PkFGSGDjUhhy1hwCDA&usqp=CAU' alt='Collection not found'>"
+      );
+  });
+
+
+     //    
+
+     //API  VOLUME AND SOL PRICE
+
+     fetch('https://api-mainnet.magiceden.io/volumes')
+     .then(response => response.json())
+     .then(data => {
+      const volumeData = data.last24Hrs;
+
+      const solVolumeContainer = document.getElementById('sol-volume');
+      solVolumeContainer.textContent = `Volume 24h: ${volumeData}`;
+    })
+
+
+     .catch(error => console.error(error));
+
+
+
+
+     fetch('https://price.jup.ag/v1/price?id=sol')
+     .then(response => response.json())
+     .then(data => {
+      const solPriceElement = document.getElementById('sol-price');
+      const solPrice = data.data.price;
+      solPriceElement.textContent = `Sol: ${solPrice}`;
+    })
+     .catch(error => console.error(error));
+
+     //API  VOLUME AND SOL PRICE
+
+
+
+//Tags to names 
+
+const collectionsMap = {};
+const apiUrl = 'https://api-mainnet.magiceden.io/v2/collections/';
+
+
+fetch(apiUrl)
+.then(response => response.json())
+.then(collections => {
+  collections.forEach(collection => {
+    collectionsMap[collection.name.trim().toLowerCase()] = collection.symbol;
+    const row = document.createElement('tr');
+    const symbolCell = document.createElement('td');
+    symbolCell.textContent = collection.symbol;
+    row.appendChild(symbolCell);
+    const nameCell = document.createElement('td');
+    nameCell.textContent = collection.name.trim().toLowerCase();
+    row.appendChild(nameCell);
+    document.querySelector('#collections-table tbody').appendChild(row);
+  });
+
+  console.log(collectionsMap);
+})
+.catch(error => console.error(error));
+
+//Tags to names 
+
+
+//  Update on click with autochangein of name to the tag  //
+
+
+
+function updateIframe() {
+  const baseUrl = "https://magiceden.io/marketplace/";
+  const degods = document.getElementById("input-degods").value.toLowerCase();
+  const collectionTag = collectionsMap[degods];
+  const iframe = document.getElementsByTagName("iframe")[0];
+  iframe.src = baseUrl + collectionTag + "?activeTab=stats";
+}
+
+
+document.getElementById("open-popup").addEventListener("click", function () {
+  document.getElementById("popup-container").style.display = "block";
+  document.background-color.classList.add("blur");
+});
+
+document.getElementById("close-popup").addEventListener("click", function () {
+  document.getElementById("popup-container").style.display = "none";
+  document.background-color.classList.remove("blur");
+});
+
+$(document).on("click", function(event) {
+  if ($(event.target).is("#popup-container")) {
+    $("#popup-container").hide();
+  }
+});
+
+</script>
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+
