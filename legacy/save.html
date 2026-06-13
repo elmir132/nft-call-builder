@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Submit</title>
+	<link rel="shortcut icon" type="image/x-icon" href="logo_nft.png" />
+	<link rel="stylesheet" type="text/css" href="myapp.css">
+	
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" href="loader.css">
+	<script src="sol_and_volume_api.js" defer></script>
+	<script src="copy_button.js" defer></script>
+
+	<style contenteditable style="display:block; white-space: pre;">
+		@font-face {
+			font-family: 'Vogue';
+			src: url('/Users/elmir/Downloads/aesthetic_5/Aesthetic-Regular.ttf') format('truetype');
+			font-weight: normal;
+			font-style: normal;
+		}
+
+		@font-face {
+			font-family: 'PUM';
+			src: url('/Users/elmir/Downloads/roboto/Roboto-Light.ttf') format('truetype');
+			font-weight: normal;
+			font-style: normal;
+		}
+		h2{
+			color: #FFFA40;
+			font-family: "Vogue", sans-serif;
+			text-align: center;
+			font-size: 180%
+		}
+		.form-inputs {
+			width: 50%;
+			margin-right: 20px;
+			font-color: white;
+		}
+
+		.form-title {
+			font-size: 24px;
+			font-weight: bold;
+			text-align: right;
+			width: 40%;
+		}
+
+		.card-container {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-around;
+		}
+
+		.card {
+			width: calc(33.33% - 40px); /* Adjust the width based on the number of cards you want in a row */
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			padding: 10px;
+			margin: 20px;
+			background-color: lightblue;
+			box-sizing: border-box;
+			cursor: pointer;
+			transition: transform 0.3s ease;
+		}
+
+		.card:hover {
+			transform: scale(1.05);
+		}
+
+		.card-header {
+			font-weight: bold;
+			font-size: 20px;
+			margin-bottom: 10px;
+		}
+
+		.card-content {
+			display: none;
+		}
+
+		.card-content.show {
+			display: block;
+		}
+
+
+		.just {
+			display: list-item;
+			text-align: center;
+			float: left;
+			width: 50%;
+		}
+
+		.just label {
+			margin-left: 5px;
+			width: 15%;
+			transition: all 0.3s ease 0.01s;
+			font-size: 150%;
+		}
+
+
+		.just:hover label {
+			color: lightgreen;
+			transition: all 0.5s ease 0.01s;
+		}
+
+		.container1 {
+			display: flex;
+			justify-content: space-between;
+		}
+
+
+		.just1 {
+			display: list-item;
+			text-align: center;
+			float: right;
+			width: 50%;
+		}
+
+		.just1 label {
+			margin-left: 5px;
+			width: 15%;
+			transition: all 0.3s ease 0.01s;
+			font-size: 150%;
+		}
+
+		.just1:hover label {
+			color: red;
+			transition: all 0.5s ease 0.01s;
+		}
+		body {
+			background-color: #1e2235; 
+
+		}
+
+		.close-button {
+			position: absolute;
+			top: 5px;
+			right: 5px;
+			background-color: red;
+			color: white;
+			border: none;
+			border-radius: 50%;
+			width: 20px;
+			height: 20px;
+			cursor: pointer;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		#submissionForm{
+			text-align-last: center;
+			margin:3%; 
+			color: lightblue;
+			font-style: italic;
+
+		}
+
+		/* Price change styles */
+		.price-change {
+			font-size: 14px;
+			margin-top: 5px;
+		}
+
+		.price-up {
+			color: green;
+		}
+
+		.price-down {
+			color: red;
+		}
+
+	</style>
+
+
+</head>	
+
+<body>
+	<section>
+		<nav class="header-nav container flex-container" style="height: 200px">
+			<header>
+				<div class="header">
+					<h1 class="logo-link logo" ><a href="myapi.html">Elmirc𐌀n</a></h1>
+					<ol class="header-menu flex-container">
+						<li style="backdrop-filter: blur(15px);"><a href="Top.html">HOT!</a></li>
+						<li style="backdrop-filter: blur(15px);"><a href="wallet.html">Watchlist</a></li>
+						<li style="backdrop-filter: blur(15px);"><a href="flip.html">Flip</a></li>
+					</div>
+				</div>
+				<div class="header-background"></div>
+				<div style="padding: 50px">
+				</header>
+			</nav>
+			<div id="sol-volume" class="sol-volume">Volume: Loading...</div>
+			<div id="sol-price" class="sol-price">Sol: Loading...</div>
+
+
+
+			<h2>Submit Form</h2>
+			
+
+			<form id="submissionForm">
+				<label for="searchInput">Search:</label>
+				<input type="text" id="searchInput" oninput="searchCards()" placeholder="Search by Name" required>
+			</form>
+
+
+
+			<div id="submitted-forms" class="card-container">
+				<!-- The submitted forms will be displayed here dynamically -->
+			</div>
+
+			<script>
+  // Define the event listener for the form submission
+  document.getElementById('submissionForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    // Get the form data
+    const formData = {
+    	name: document.getElementById('name').value,
+    	fp: document.getElementById('fp').value,
+    	listed: document.getElementById('listed').value,
+    	ep: document.getElementById('ep').value,
+    	risks: document.getElementById('risks').value,
+    	description: document.getElementById('description').value,
+    	charts: document.getElementById('charts').value,
+    	links: document.getElementById('links').value,
+    };
+
+    // Save the form data to localStorage
+    const savedForms = JSON.parse(localStorage.getItem('savedForms') || '[]');
+    savedForms.push(formData);
+    localStorage.setItem('savedForms', JSON.stringify(savedForms));
+
+    // Clear the form fields
+    document.getElementById('submissionForm').reset();
+
+    // Navigate to the submitted.html page
+
+
+    ////////
+    // window.location.href = 'submitted.html';
+});
+
+  // Display the submitted forms on the submitted.html page
+  window.addEventListener('DOMContentLoaded', displaySubmittedForms);
+
+  function displaySubmittedForms() {
+    // Retrieve the saved forms from localStorage
+    const savedForms = JSON.parse(localStorage.getItem('savedForms') || '[]');
+
+    // Get the element where we'll display the submitted forms
+    const submittedFormsDiv = document.getElementById('submitted-forms');
+    submittedFormsDiv.innerHTML = ''; // Clear existing content
+
+
+    let openedCard = null;
+
+    // Loop through the saved forms and display them as collapsible cards
+                // Loop through the saved forms and display them as collapsible cards
+                savedForms.forEach((form, index) => {
+                	const formCard = document.createElement('div');
+                	formCard.className = 'card';
+
+                	const cardHeader = document.createElement('div');
+                	cardHeader.className = 'card-header';
+                	cardHeader.textContent = `Form ${index + 1}: ${form.name}`;
+
+                	const cardContent = document.createElement('div');
+                	cardContent.className = 'card-content';
+                	const formContent = `
+                	<p>Name: ${form.name}</p>
+                	<p>FP Value: ${form.fp}</p>
+                	<!-- Add other form fields here -->
+                	<p>Listed Value: ${form.listed}</p>
+                	<p>EP Range: ${form.ep}</p>
+                	<p>Risks: ${form.risks}</p>
+                	<p>Project Description: ${form.description}</p>
+                	<p>Charts: ${form.charts}</p>
+                	<p>Links: ${form.links}</p>
+                	`;
+
+                	cardContent.innerHTML = formContent;
+
+                // Close button to delete the card
+                const closeButton = document.createElement('button');
+                closeButton.className = 'close-button';
+                closeButton.innerHTML = '&times;';
+                closeButton.addEventListener('click', function () {
+                    // Remove the card from the DOM and from localStorage
+                    formCard.remove();
+                    savedForms.splice(index, 1);
+                    localStorage.setItem('savedForms', JSON.stringify(savedForms));
+                    openedCard = null; // Reset openedCard reference if necessary
+                });
+    
+        // Construct the API URL with the collection name
+        
+
+            // Calculate price change
+         
+
+                formCard.appendChild(closeButton);
+                formCard.appendChild(cardHeader);
+                formCard.appendChild(cardContent);
+
+
+
+                 cardHeader.addEventListener('click', function () {
+                	if (openedCard !== cardContent) {
+                        // Close the previously opened card content
+                        if (openedCard) {
+                        	openedCard.classList.remove('show');
+                        }
+                        // Open the clicked card content
+                        cardContent.classList.add('show');
+                        // Update the reference to the currently opened card
+                        openedCard = cardContent;
+                    } else {
+                        // Clicking on the same header should close the card content
+                        cardContent.classList.remove('show');
+                        // Reset the reference to the opened card
+                        openedCard = null;
+                    }
+                });
+                 
+ 				const collectionName = form.name; // Use the form name as the collection name
+                const apiUrl = 'https://api-mainnet.magiceden.io/v2/collections/';
+                const apiUrlWithCollectionTag = `${apiUrl}${collectionName}`;
+                fetch(apiUrlWithCollectionTag)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        const currentPrice = data.floorPrice;
+                        const fp = parseFloat(form.fp);
+                        const priceChange = currentPrice - fp;
+
+                        // Create the price change element and add it to the card header
+                        const priceChangeElement = document.createElement('p');
+                        priceChangeElement.className = 'price-change';
+                        if (priceChange > 0) {
+                            priceChangeElement.classList.add('price-up');
+                            priceChangeElement.textContent = `Price went up by ${priceChange.toFixed(2)} from FP`;
+                        } else if (priceChange < 0) {
+                            priceChangeElement.classList.add('price-down');
+                            priceChangeElement.textContent = `Price went down by ${Math.abs(priceChange).toFixed(2)} from FP`;
+                        } else {
+                            priceChangeElement.textContent = `Price stayed the same as FP`;
+                        }
+                        cardHeader.appendChild(priceChangeElement);
+                    })
+                    .catch((error) => {
+                        console.error(`Error fetching data for ${collectionName}: ${error}`);
+                    });
+
+        
+ 
+			submittedFormsDiv.appendChild(formCard);
+            });
+
+                     // After displaying the cards, call the searchCards function to initialize the search feature
+         searchCards();
+     }
+
+        // Function to handle search functionality
+        function searchCards() {
+        	const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        	const cardContainers = document.querySelectorAll('.card-container .card');
+
+        	cardContainers.forEach((card) => {
+        		const cardName = card.querySelector('.card-header').textContent.toLowerCase();
+        		if (cardName.includes(searchInput)) {
+        			card.style.display = 'block';
+        		} else {
+        			card.style.display = 'none';
+        		}
+        	});
+        }
+
+
+
+
+
+// Add a click event listener to close other open cards when a card is clicked
+
+</script>
+
+
+
+
+
+</div></ol></div></header></nav></section></body></html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Submit</title>
+	<link rel="shortcut icon" type="image/x-icon" href="logo_nft.png" />
+	<link rel="stylesheet" type="text/css" href="myapp.css">
+	
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" href="loader.css">
+	<script src="sol_and_volume_api.js" defer></script>
+	<script src="copy_button.js" defer></script>
+
+	<style contenteditable style="display:block; white-space: pre;">
+		@font-face {
+			font-family: 'Vogue';
+			src: url('/Users/elmir/Downloads/aesthetic_5/Aesthetic-Regular.ttf') format('truetype');
+			font-weight: normal;
+			font-style: normal;
+		}
+
+		@font-face {
+			font-family: 'PUM';
+			src: url('/Users/elmir/Downloads/roboto/Roboto-Light.ttf') format('truetype');
+			font-weight: normal;
+			font-style: normal;
+		}
+		h2{
+			color: #FFFA40;
+			font-family: "Vogue", sans-serif;
+			text-align: center;
+			font-size: 180%
+		}
+		.form-inputs {
+			width: 50%;
+			margin-right: 20px;
+			font-color: white;
+		}
+
+		.form-title {
+			font-size: 24px;
+			font-weight: bold;
+			text-align: right;
+			width: 40%;
+		}
+
+		.card-container {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-around;
+		}
+
+		.card {
+			width: calc(33.33% - 40px); /* Adjust the width based on the number of cards you want in a row */
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			padding: 10px;
+			margin: 20px;
+			background-color: lightblue;
+			box-sizing: border-box;
+			cursor: pointer;
+			transition: transform 0.3s ease;
+		}
+
+		.card:hover {
+			transform: scale(1.05);
+		}
+
+		.card-header {
+			font-weight: bold;
+			font-size: 20px;
+			margin-bottom: 10px;
+		}
+
+		.card-content {
+			display: none;
+		}
+
+		.card-content.show {
+			display: block;
+		}
+
+
+		.just {
+			display: list-item;
+			text-align: center;
+			float: left;
+			width: 50%;
+		}
+
+		.just label {
+			margin-left: 5px;
+			width: 15%;
+			transition: all 0.3s ease 0.01s;
+			font-size: 150%;
+		}
+
+
+		.just:hover label {
+			color: lightgreen;
+			transition: all 0.5s ease 0.01s;
+		}
+
+		.container1 {
+			display: flex;
+			justify-content: space-between;
+		}
+
+
+		.just1 {
+			display: list-item;
+			text-align: center;
+			float: right;
+			width: 50%;
+		}
+
+		.just1 label {
+			margin-left: 5px;
+			width: 15%;
+			transition: all 0.3s ease 0.01s;
+			font-size: 150%;
+		}
+
+		.just1:hover label {
+			color: red;
+			transition: all 0.5s ease 0.01s;
+		}
+		body {
+			background-color: #1e2235; 
+
+		}
+
+		.close-button {
+			position: absolute;
+			top: 5px;
+			right: 5px;
+			background-color: red;
+			color: white;
+			border: none;
+			border-radius: 50%;
+			width: 20px;
+			height: 20px;
+			cursor: pointer;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		#submissionForm{
+			text-align-last: center;
+			margin:3%; 
+			color: lightblue;
+			font-style: italic;
+
+		}
+
+		/* Price change styles */
+		.price-change {
+			font-size: 14px;
+			margin-top: 5px;
+		}
+
+		.price-up {
+			color: green;
+		}
+
+		.price-down {
+			color: red;
+		}
+
+		#collections-table {
+			margin-top: 20px;
+			border-collapse: collapse;
+		}
+
+		#collections-table th,
+		#collections-table td {
+			border: 1px solid #ccc;
+			padding: 8px;
+		}
+	</style>
+
+
+</head>	
+
+<body>
+	<section>
+		<nav class="header-nav container flex-container" style="height: 200px">
+			<header>
+				<div class="header">
+					<h1 class="logo-link logo" ><a href="myapi.html">Elmirc𐌀n</a></h1>
+					<ol class="header-menu flex-container">
+						<li style="backdrop-filter: blur(15px);"><a href="Top.html">HOT!</a></li>
+						<li style="backdrop-filter: blur(15px);"><a href="wallet.html">Watchlist</a></li>
+						<li style="backdrop-filter: blur(15px);"><a href="flip.html">Flip</a></li>
+					</div>
+				</div>
+				<div class="header-background"></div>
+				<div style="padding: 50px">
+				</header>
+			</nav>
+			<div id="sol-volume" class="sol-volume">Volume: Loading...</div>
+			<div id="sol-price" class="sol-price">Sol: Loading...</div>
+
+
+
+			<h2>Submit Form</h2>
+			
+
+			<form id="submissionForm">
+				<label for="searchInput">Search:</label>
+				<input type="text" id="searchInput" oninput="searchCards()" placeholder="Search by Name" required>
+			</form>
+
+
+
+			<div id="submitted-forms" class="card-container">
+				<!-- The submitted forms will be displayed here dynamically -->
+			</div>
+
+
+			<section>
+				<h2>Collection Data</h2>
+				<pre id="collectionDataDisplay"></pre>
+			</section>
+
+
+
+
+
+			<script>
+  // Define the event listener for the form submission
+  document.getElementById('submissionForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    // Get the form data
+    const formData = {
+    	name: document.getElementById('name').value,
+    	fp: document.getElementById('fp').value,
+    	listed: document.getElementById('listed').value,
+    	ep: document.getElementById('ep').value,
+    	risks: document.getElementById('risks').value,
+    	description: document.getElementById('description').value,
+    	charts: document.getElementById('charts').value,
+    	links: document.getElementById('links').value,
+    };
+
+    // Save the form data to localStorage
+    const savedForms = JSON.parse(localStorage.getItem('savedForms') || '[]');
+    savedForms.push(formData);
+    localStorage.setItem('savedForms', JSON.stringify(savedForms));
+
+    // Clear the form fields
+    document.getElementById('submissionForm').reset();
+
+    // Navigate to the submitted.html page
+
+
+    ////////
+    // window.location.href = 'submitted.html';
+});
+
+  // Display the submitted forms on the submitted.html page
+  window.addEventListener('DOMContentLoaded', fetchSubmittedForms);
+
+
+  const collectionsMap = {};
+  const limit = 500;
+  let offset = 0;
+  let collections = [];
+
+   const apiUrl = 'https://api-mainnet.magiceden.io/v2/collections/';
+        
+
+        // Fetch collections and populate the table
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(collections => {
+                collections.forEach(collection => {
+                    const tagName = collection.name.trim().toLowerCase();
+                    const tagSymbol = collection.symbol;
+                    collectionsMap[tagName] = {
+                        symbol: tagSymbol
+                    };
+                    const row = document.createElement('tr');
+                    const symbolCell = document.createElement('td');
+                    symbolCell.textContent = tagSymbol;
+                    row.appendChild(symbolCell);
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = tagName;
+                    row.appendChild(nameCell);
+                    document.querySelector('#collections-table tbody').appendChild(row);
+                });
+
+                console.log(collectionsMap);
+                fetchSubmittedForms();
+            })
+            .catch(error => console.error(error));
+
+        function fetchSubmittedForms() {
+            // Retrieve the saved forms from localStorage
+            const savedForms = JSON.parse(localStorage.getItem('savedForms') || '[]');
+
+            // Get the element where we'll display the submitted forms
+            const submittedFormsDiv = document.getElementById('submitted-forms');
+            submittedFormsDiv.innerHTML = ''; // Clear existing content
+
+            let openedCard = null;
+
+            // Loop through the saved forms and display them as collapsible cards
+            savedForms.forEach((form, index) => {
+                const formCard = document.createElement('div');
+                formCard.className = 'card';
+
+                const cardHeader = document.createElement('div');
+                cardHeader.className = 'card-header';
+                cardHeader.textContent = `Form ${index + 1}: ${form.name}`;
+
+                const cardContent = document.createElement('div');
+                cardContent.className = 'card-content';
+                const formContent = `
+                    <p>Name: ${form.name}</p>
+                    <p>FP Value: ${form.fp}</p>
+                    <!-- Add other form fields here -->
+                    <p>Listed Value: ${form.listed}</p>
+                    <p>EP Range: ${form.ep}</p>
+                    <p>Risks: ${form.risks}</p>
+                    <p>Project Description: ${form.description}</p>
+                    <p>Charts: ${form.charts}</p>
+                    <p>Links: ${form.links}</p>
+                `;
+                cardContent.innerHTML = formContent;
+
+                // Close button to delete the card
+                const closeButton = document.createElement('button');
+                closeButton.className = 'close-button';
+                closeButton.innerHTML = '&times;';
+                closeButton.addEventListener('click', function () {
+                    // Remove the card from the DOM and from localStorage
+                    formCard.remove();
+                    savedForms.splice(index, 1);
+                    localStorage.setItem('savedForms', JSON.stringify(savedForms));
+                    openedCard = null; // Reset openedCard reference if necessary
+                });
+
+                // Construct the API URL with the collection name
+                const collectionName = form.name.trim().toLowerCase();
+                const collectionData = collectionsMap[collectionName];
+
+                console.log('Collection Name from Form:', collectionName);
+
+                if (collectionData) {
+                    const collectionTag = collectionData.symbol;
+                    const apiUrlWithCollectionTag = `${apiUrl}${collectionTag}`;
+                    fetch(apiUrlWithCollectionTag)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`API Request failed for ${collectionName}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data && data.floorPrice !== undefined) {
+                                const currentPrice = data.floorPrice;
+                                const fp = parseFloat(form.fp);
+                                const formattedFloorPrice = (currentPrice / 1000000000).toFixed(1);
+                                const priceChange = formattedFloorPrice - fp;
+                                // Create the price change element and add it to the card header
+                                const priceChangeElement = document.createElement('p');
+                                priceChangeElement.className = 'price-change';
+                                if (priceChange > 0) {
+                                    priceChangeElement.classList.add('price-up');
+                                    priceChangeElement.textContent = `Price went up by ${priceChange.toFixed(2)} from FP`;
+                                } else if (priceChange < 0) {
+                                    priceChangeElement.classList.add('price-down');
+                                    priceChangeElement.textContent = `Price went down by ${Math.abs(priceChange).toFixed(2)} from FP`;
+                                } else {
+                                    priceChangeElement.textContent = `Price stayed the same as FP`;
+                                }
+                                cardHeader.appendChild(priceChangeElement);
+                            }
+                        })
+                        .catch(error => {
+                            console.error(`Error fetching data for ${collectionName}: ${error}`);
+                        });
+                } else {
+                    console.error(`Collection not found: ${collectionName}`);
+                    console.log('API Response:', apiUrl);
+                    console.log('Collection Data:', collectionData);
+                }
+
+                formCard.appendChild(closeButton);
+                formCard.appendChild(cardHeader);
+                formCard.appendChild(cardContent);
+
+                cardHeader.addEventListener('click', function () {
+                    if (openedCard !== cardContent) {
+                        // Close the previously opened card content
+                        if (openedCard) {
+                            openedCard.classList.remove('show');
+                        }
+                        // Open the clicked card content
+                        cardContent.classList.add('show');
+                        // Update the reference to the currently opened card
+                        openedCard = cardContent;
+                    } else {
+                        // Clicking on the same header should close the card content
+                        cardContent.classList.remove('show');
+                        // Reset the reference to the opened card
+                        openedCard = null;
+                    }
+                });
+
+                submittedFormsDiv.appendChild(formCard);
+            });
+
+            // After displaying the cards, call the searchCards function to initialize the search feature
+            searchCards();
+        }
+
+        // Function to handle search functionality
+        function searchCards() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const cardContainers = document.querySelectorAll('.card-container .card');
+
+            cardContainers.forEach(card => {
+                const cardName = card.querySelector('.card-header').textContent.toLowerCase();
+                if (cardName.includes(searchInput)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+   
+
+
+// Add a click event listener to close other open cards when a card is clicked
+
+</script>
+
+
+
+<!-- The collection symbols and names will be inserted here dynamically -->
+<!-- The collection symbols and names will be inserted here dynamically -->
+<!-- The collection symbols and names will be inserted here dynamically -->
+
+<!-- The collection symbols and names will be inserted here dynamically -->
+
+
+
+<div>
+	<table id="collections-table">
+		<thead>
+			<tr>
+				<th>Symbol</th>
+				<th>Name</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- The collection symbols and names will be inserted here dynamically -->
+		</tbody>
+	</table>
+</div>
+
+
+
+
+<!-- <script>
+    // ... Your existing JavaScript code ...
+
+    const apiUrl = 'https://api-mainnet.magiceden.io/v2/collections/';
+    // Fetch collections and populate the table
+    fetch(apiUrl)
+    .then(response => response.json())
+    .then(collections => {
+    	collections.forEach(collection => {
+    		collectionsMap[collection.name.trim().toLowerCase()] = collection.symbol;
+    		const row = document.createElement('tr');
+    		const symbolCell = document.createElement('td');
+    		symbolCell.textContent = collection.symbol;
+    		row.appendChild(symbolCell);
+    		const nameCell = document.createElement('td');
+    		nameCell.textContent = collection.name.trim().toLowerCase();
+    		row.appendChild(nameCell);
+    		document.querySelector('#collections-table tbody').appendChild(row);
+    	});
+
+    	console.log(collectionsMap);
+    })
+    .catch(error => console.error(error));
+</script>
+ -->
+
+<!-- The collection symbols and names will be inserted here dynamically -->
+<!-- The collection symbols and names will be inserted here dynamically -->
+<!-- The collection symbols and names will be inserted here dynamically -->
+<!-- The collection symbols and names will be inserted here dynamically -->
+
+
+
+
+
+
+</div></ol></div></header></nav></section></body></html>
+
+
+
+
+
+
+
