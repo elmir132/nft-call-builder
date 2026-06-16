@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>New Collections</title>
+  <link rel="stylesheet" type="text/css" href="myapp.css">
+  <link rel="shortcut icon" type="image/x-icon" href="logo_nft.png" />
+
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      background-color: #1e2235;
+    }
+
+    #cards-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      width: 300px;
+      height: 400px;
+      margin: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background-color: #75E6DA;
+      border-radius: 15px;
+      opacity: 0.73;
+    }
+
+    .card:hover {
+      opacity: 1;
+    }
+
+    .card-image {
+      flex: 1;
+      background-position: center;
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
+    .card-text {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 0 0 120px;
+    }
+
+    .card-name {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+
+    .card-desc {
+
+      font-size: 34px;
+      margin-bottom: 10px;
+      text-align: right;
+      transform: translate(226px, -77px);
+      font-weight: bolder;
+      background-color: #B1D4E0;
+      width: 33px;
+
+
+
+    }
+
+    .card-desc1{  
+      font-size: 34px;
+      margin-bottom: 10px;
+      text-align: right;
+      transform: translate(-252px, -310px);
+      font-weight: bolder;
+      background-color: #B1D4E0;
+
+    }
+
+    .card-floor-price {
+      font-size: 18px;
+      color: #444444;
+      text-align: center;
+
+    }
+
+    .card-floor-price span {
+      font-weight: bold;
+      color: #000000;
+      font-size: 20px;
+    }
+
+    .card-volume {
+      font-size: 14px;
+      color: #444444;
+      text-align: center;
+    }
+
+    .card-volume span {
+      font-weight: bold;
+      color: #000000;
+      font-size: 16px;
+    }
+
+    .sol-price {
+      position: fixed;
+      top: 5%;
+      right: 5%;
+      font-weight: 50px;
+      font-weight: bold;
+      color: lightblue;
+      font-size: 25px;
+      font-family: monospace;
+      backdrop-filter: blur(85px);
+    }
+
+    .time-range-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: auto 33% 4%;
+    }
+
+    .time-range-option {
+      margin: 0 10px;
+      cursor: pointer;
+      font-size: 18px;
+      color: white;
+      opacity: 0.7;
+    }
+
+    .time-range-option.selected {
+      opacity: 1;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="header-nav container flex-container">
+    <header>
+      <div class="header">
+        <h1 class="logo-link logo"><a href="myapi.html">Elmirc𐌀n</a></h1>
+        <ol class="header-menu flex-container">
+          <li style="backdrop-filter: blur(15px);"><a href="HOT!.html">HOT!</a></li>
+          <li style="backdrop-filter: blur(15px);"><a href="wallet.html">Watchlist</a></li>
+          <li style="backdrop-filter: blur(15px);"><a href="flip.html">Flip</a></li>
+        </div>
+      </div>
+      <div class="header-background"></div>
+      <div style="padding: 50px">
+      </header>
+    </nav>
+
+    <div id="sol-price" class="sol-price">Sol: Loading...</div>
+    <div id="sol-volume" class="sol-volume">Volume: Loading...</div>
+
+    <div class="time-range-bar">
+      <div class="time-range-option selected" data-time-range="1h">1 Hour</div>
+      <div class="time-range-option" data-time-range="1d">1 Day</div>
+      <div class="time-range-option" data-time-range="7d">7 Days</div>
+      <div class="time-range-option" data-time-range="30d">30 Days</div>
+    </div>
+
+    <script>
+      function fetchData(timeRange) {
+        const apiUrl = `https://api-mainnet.magiceden.dev/v2/marketplace/popular_collections?timeRange=${timeRange}`;
+
+        fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          const collections = data;
+          const cardsContainer = document.getElementById('cards-container');
+        cardsContainer.innerHTML = ''; // Clear existing cards
+
+        collections.forEach(collection => {
+          const card = document.createElement('div');
+          card.className = 'card';
+
+          const imageContainer = document.createElement('div');
+          imageContainer.className = 'card-image';
+          imageContainer.style.backgroundImage = `url(${collection.image})`;
+
+          const textContainer = document.createElement('div');
+          textContainer.className = 'card-text';
+
+          const nameContainer = document.createElement('div');
+          nameContainer.className = 'card-name';
+          const nameLink = document.createElement('a');
+
+          nameLink.textContent = collection.name;
+          nameLink.href = `flip.html?tag=${encodeURIComponent(collection.name)}&name=${encodeURIComponent(collection.symbol)}`;
+          nameContainer.appendChild(nameLink);
+          textContainer.appendChild(nameContainer);
+
+          const descContainer = document.createElement('div');
+          descContainer.className = 'card-desc';
+          descContainer.textContent = collection.description;
+          textContainer.appendChild(descContainer);
+
+          const descContainer1 = document.createElement('div');
+          descContainer1.className = 'card-desc1';
+          descContainer1.textContent = collection.description;
+          textContainer.appendChild(descContainer1);
+
+          const floorPriceContainer = document.createElement('div');
+          floorPriceContainer.className = 'card-floor-price';
+          const formattedFloorPrice = (collection.floorPrice / 1000000000).toFixed(1);
+          floorPriceContainer.innerHTML = `Floor Price: <span>${formattedFloorPrice}</span> sol`;
+          textContainer.appendChild(floorPriceContainer);
+
+          const volumeContainer = document.createElement('div');
+          volumeContainer.className = 'card-volume';
+          const formattedVolume = (collection.volumeAll / 1).toFixed(1);
+          volumeContainer.innerHTML = `Volume All: <span>${formattedVolume}</span> sol`;
+          textContainer.appendChild(volumeContainer);
+
+          card.appendChild(imageContainer);
+          card.appendChild(textContainer);
+
+          cardsContainer.appendChild(card);
+        });
+      })
+        .catch(error => console.error(error));
+      }
+
+      function handleTimeRangeClick(event) {
+        const selectedOption = event.target;
+        const timeRange = selectedOption.dataset.timeRange;
+
+    // Remove selected class from all options
+    const timeRangeOptions = document.querySelectorAll('.time-range-option');
+    timeRangeOptions.forEach(option => option.classList.remove('selected'));
+
+    // Add selected class to the clicked option
+    selectedOption.classList.add('selected');
+
+    fetchData(timeRange);
+  }
+
+  const timeRangeOptions = document.querySelectorAll('.time-range-option');
+  timeRangeOptions.forEach(option => option.addEventListener('click', handleTimeRangeClick));
+
+  // Fetch data for the initial selected option (1 Hour)
+  fetchData('1h');
+
+  
+
+</script>
+
+<div id="cards-container" ></div>
+</body>
+</html>
