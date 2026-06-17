@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Nft calling</title>
+	<link rel="shortcut icon" type="image/x-icon" href="logo_nft.png" />
+	<link rel="stylesheet" type="text/css" href="myapp.css">
+	
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" href="loader.css">
+
+
+
+	<style contenteditable style="display:block; white-space: pre;">
+		@font-face {
+			font-family: 'Vogue';
+			src: url('/Users/elmir/Downloads/aesthetic_5/Aesthetic-Regular.ttf') format('truetype');
+			font-weight: normal;
+			font-style: normal;
+		}
+
+		@font-face {
+			font-family: 'PUM';
+			src: url('/Users/elmir/Downloads/roboto/Roboto-Light.ttf') format('truetype');
+			font-weight: normal;
+			font-style: normal;
+		}
+		h2{
+			color: #FFFA40;
+			font-family: "Vogue", sans-serif;
+			text-align: center;
+			font-size: 180%
+		}
+		.form-inputs {
+			width: 50%;
+			margin-right: 20px;
+			font-color: white;
+		}
+
+		.form-title {
+			font-size: 24px;
+			font-weight: bold;
+			text-align: right;
+			width: 40%;
+		}
+
+		.just {
+			display: list-item;
+			text-align: center;
+			float: left;
+			width: 50%;
+		}
+
+		.just label {
+			margin-left: 5px;
+			width: 15%;
+			transition: all 0.3s ease 0.01s;
+			font-size: 150%;
+		}
+
+
+		.just:hover label {
+			color: lightgreen;
+			transition: all 0.5s ease 0.01s;
+		}
+
+		.container1 {
+			display: flex;
+			justify-content: space-between;
+		}
+
+
+		.just1 {
+			display: list-item;
+			text-align: center;
+			float: right;
+			width: 50%;
+		}
+
+		.just1 label {
+			margin-left: 5px;
+			width: 15%;
+			transition: all 0.3s ease 0.01s;
+			font-size: 150%;
+		}
+
+		.just1:hover label {
+			color: red;
+			transition: all 0.5s ease 0.01s;
+		}
+
+
+		/* Hide the default checkbox */
+		input[type="checkbox"].choice-option {
+			display: none;
+		}
+
+		/* Style the custom checkbox */
+		input[type="checkbox"].choice-option + label {
+			position: relative;
+			padding-left: 25px; /* Adjust the spacing */
+			cursor: pointer;
+		}
+
+		/* Style the checkbox indicator */
+		input[type="checkbox"].choice-option + label:before {
+			content: '';
+			position: absolute;
+			top: 2px; /* Adjust the vertical positioning */
+			left: 0;
+			width: 16px; /* Adjust the size */
+			height: 16px; /* Adjust the size */
+			border: 2px solid #ccc; /* Customize the border */
+			border-radius: 4px; /* Adjust the border radius */
+		}
+
+		/* Style the checkbox indicator when checked */
+		input[type="checkbox"].choice-option:checked + label:before {
+			background-color: #2196F3; /* Customize the background color */
+			border-color: #2196F3; /* Customize the border color */
+		}
+
+		/* Style the checkbox label text */
+		input[type="checkbox"].choice-option + label:after {
+			content: '';
+			position: absolute;
+			display: none;
+		}
+
+		/* Style the checkbox label text when checked */
+		input[type="checkbox"].choice-option:checked + label:after {
+			display: block;
+			width: 6px; /* Adjust the size */
+			height: 12px; /* Adjust the size */
+			border: solid #fff; /* Customize the color */
+			border-width: 0 3px 3px 0;
+			transform: rotate(45deg);
+			top: 2px; /* Adjust the vertical positioning */
+			left: 6px; /* Adjust the horizontal positioning */
+		}
+
+		input[type=text], select, textarea {
+			width: 100%;
+			padding: 12px;
+			border: 1px solid white;
+			border-radius: 4px;
+			resize: vertical;
+		}
+
+		label {
+			padding: 1px 0px 0px 0;
+			display: inline-block;
+			font-weight: bold;
+			color: white;
+			font-size: 160%;
+			font-family: "Vogue", sans-serif;
+			opacity: 0.8
+		}
+
+		button[type=submit] {
+			background-color: #4CAF50;
+			color: background-color: #1e2235;
+			padding: 24px 0px 30px;
+			border: none;
+			margin-top: 5px;
+			border-radius: 4px;
+			cursor: pointer;		
+			display: block; /* make the button a block-level element */
+			/*margin: 0 auto; /* center the button horizontally */
+			margin: 5px auto 5px;
+			width: 50%;
+
+
+		}
+
+
+		button[type=submit]:hover {
+			background-color: #FFFA40;
+			color: black;
+			font-size: 110%;
+			transition: all 0.3s ease 0.05s;
+			font-weight: 100px;
+			/*-webkit-text-security:circle;*/
+			-webkit-text-stroke: 1.0px
+		}
+
+		button[type=submit]:hover::after {
+			color: white;
+		}
+
+
+		button[type=submit1] {
+			background-color: azure;
+			color: background-color: #1e2235;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;		
+			display: block; /* make the button a block-level element */
+
+		}
+
+
+		button[type=submit1]:hover {
+			background-color: #FFFA40;
+			color: black;
+			transform: scale(1.2);
+			transition: all 0.3s ease 0.05s;
+
+
+		}
+
+		button[type=submit1]:hover::after {
+			color: white;
+			transition: all 0.7s ease 0.1s;
+		}
+
+
+		.container {
+			border-radius: 5px;
+			padding: 20px;
+		}
+
+		.col-25 {
+			float: right;
+			width: 15%;
+			margin-top: 6px;
+		}
+
+		.col-75 {
+			float: left;
+			width: 75%;
+			margin-top: 6px;
+			margin-left: 10%;
+		}
+
+		.row:after {
+			content: "";
+			display: table;
+			clear: both;
+		}
+
+		.hide{
+
+			place-content: center;
+			display: flex;
+			opacity: 0;
+			transition: all 0.7s ease 0.1s;
+
+		}
+
+		.hide:hover{
+
+			place-content: center;
+			display: flex;
+			opacity: 1;
+			transition: all 0.2s ease 0.1s;
+
+		}
+
+
+		/* Result output section */
+
+		.result {
+			margin-top: 20px;
+			color: #be3455;
+			text-align: center;
+			padding-top: 10px;
+			font-family: PUM;
+
+		}
+
+		.result1{
+			font-size: 100%;
+			margin-top:0px;
+			color: #F9CCE3;
+			text-align: left;
+			font-family: PUM;
+			transform: translate(25%, 10px);
+			width: 80%;
+
+		}
+
+		.result1 span {
+			font-size: 100%;
+			margin-top:0px;
+			color: #F9CCE3;
+			text-align: left;
+			font-family: PUM;
+			transform: translate(25%, 10px);
+			width: 80%;
+
+		}
+
+
+		.copyResult{
+
+			width: 100%;
+			box-shadow: inset 11px 1px 23px 0 rgb(0 0 0 / 50%);
+			/*height: 424px;*/
+			min-width: fit-content;
+
+		}
+		.sol-price {
+			position: fixed;
+			top: 5%;
+			right: 5%;
+			font-weight: 50px;
+			font-weight: bold;
+			color: lightblue; /*#be3455*/
+			font-size: 25px;
+			font-family: monospace;
+			backdrop-filter: blur(85px);
+
+		}
+
+		#slider-container {
+			position: absolute;
+			top: 100%;
+			left: 0;
+			width: 100%;
+			padding: 20px;
+
+		}
+
+		/* ----------------------------- */
+
+		/* Result checkboxes section */
+
+		.toggle-arrows {
+			width: 40px;
+			height: 20px;
+			cursor: pointer;
+			margin: 0px 47.5% 0px; 
+		}
+
+		.arrow-up,
+		.arrow-down {
+
+
+			background-color: black;
+			transition: transform 0.3s ease;
+			filter: drop-shadow(2px 3px 5px #2196F3);
+
+		}
+
+		.arrow-up:before,
+		.arrow-down:before {
+			content: "";
+			display: block;
+			width: 0;
+			height: 0;
+			border-style: solid;
+			border-width: 8px;
+
+
+		}
+
+		.arrow-up:before {
+			border-color: transparent transparent black transparent;
+			transform: translateY(-50%);
+		}
+
+		.arrow-down:before {
+			border-color: black transparent transparent transparent;
+			transform: translateY(-50%);
+		}
+
+		.toggle-arrows.open .arrow-up {
+			transform: rotate(-180deg) translateY(-50%);
+		}
+
+		.toggle-arrows.open .arrow-down {
+			transform: translateY(50%);
+		}
+
+		.checkbox-section {
+			max-height: 0;
+			overflow: hidden;
+			transition: max-height 0.3s ease;
+		}
+
+		.checkbox-section.open {
+			max-height: 500px; /* Adjust the height as needed */
+		}
+
+
+
+		/*Slider*/
+
+		.ui-slider .ui-btn-inner {
+			padding: 4px 0 0 0 !important;
+		}
+
+		.ui-slider-popup {
+			position: absolute !important;
+			width: 64px;
+			height: 64px;
+			text-align: center;
+			font-size: 36px;
+			padding-top: 14px;
+			z-index: 100;
+			opacity: 0.8;
+		}
+
+		.slider-container {
+			margin-top: 40px;
+			position: relative;
+		}
+
+		#range-slider {
+			width: 80%;
+			margin: 0 auto;
+		}
+
+		.slider-labels {
+			display: flex;
+			justify-content: space-between;
+			margin-top: 10px;
+			color: white;
+			font-weight: bold;
+		}
+
+		.slider-labels span {
+			flex-basis: 20%;
+			text-align: center;
+		}
+
+
+		.ui-slider-handle {
+			background-color: white;
+			color: black;
+			font-weight: bold;
+			text-align: center;
+			line-height: 1.5;
+			border-radius: 50%;
+			padding: 2px;
+			position: relative;
+
+		}
+
+		.ui-slider-handle:before {
+			content: attr(data-value);
+			position: absolute;
+			top: -30px;
+			left: 50%;
+			transform: translateX(-50%);
+			background-color: white;
+			color: black;
+			font-weight: bold;
+			padding: 4px 8px;
+			border-top-left-radius: 70%;
+			border-top-right-radius: 70%;
+			border-bottom-left-radius: 120%;
+			border-bottom-right-radius: 120%;
+			white-space: nowrap;
+			box-shadow: -1px -10px 22px rgba(0, 0, 0, 0.4);
+
+		}
+
+		.ui-slider-handle-first:before {
+			top: -50px;
+			transform: translateX(-50%);
+		}
+
+		.ui-slider-handle-last:before {
+			top: -50px;
+			transform: translateX(-50%);
+		}
+
+		/* Slider Lines */
+		.ui-slider-horizontal .ui-slider-track {
+			background-color: transparent;
+			border: none;
+		}
+
+		.ui-slider-horizontal .ui-slider-track-line {
+			position: absolute;
+			width: 2px;
+			height: 100%;
+			background-color: white;
+			transform: translateX(-50%);
+		}
+
+		.ui-slider-horizontal .ui-slider-track-line-0 {
+			left: 0;
+		}
+
+		.ui-slider-horizontal .ui-slider-track-line-25 {
+			left: 25%;
+		}
+
+		.ui-slider-horizontal .ui-slider-track-line-50 {
+			left: 50%;
+		}
+
+		.ui-slider-horizontal .ui-slider-track-line-75 {
+			left: 75%;
+		}
+
+		.ui-slider-horizontal .ui-slider-track-line-100 {
+			left: 100%;
+		}
+		#range-slider-charts{
+			width: 80%;
+			margin: 0 auto;
+		}
+
+		.footer {
+			background-color: #be3455;
+			padding: 10px;
+			text-align: center;
+			color: white;
+			font-size: 12px;
+			margin-top: 100px;
+			place-content: center;
+		}
+
+		.footer a {
+			color: #3c8dbc;
+			text-decoration: none;
+			
+
+		}
+
+		/*For emoji selection color */
+
+		.selected {
+			background-color: #2196F3;
+			color: white;
+			border-radius: 5px;
+			padding: 2px 6px;
+		}
+
+		/*	Section appearence on the screen as a background photo*/
+
+		section {
+			color: #fff; /* Text color */
+			padding: 1rem; /* Padding around the text */
+			position: relative; /* Relative positioning */
+			box-shadow: inset 0px 850px 500px -800px #fff;
+			
+		}
+
+		section::before {
+			content: '';
+			position: absolute; /* Absolute positioning */
+			left: 0;
+			right: 0;
+			top: 0;
+			bottom: 0;
+			z-index: -2;
+			background: url(https://source.unsplash.com/user/wsanter) no-repeat center/cover;
+			backdrop-filter: blur(100px);
+			opacity: 0.15;
+		}
+
+		/*	Section appearence on the screen as a background photo*/
+
+		body {
+			background-color: #1e2235; 
+		}
+
+
+
+	</style>
+
+</head>
+
+
+<body>
+	<section>
+		<nav class="header-nav container flex-container" style="height: 200px">
+			<header>
+				<div class="header">
+					<h1 class="logo-link logo" ><a href="myapi.html">Elmirc𐌀n</a></h1>
+					<ol class="header-menu flex-container">
+						<li style="backdrop-filter: blur(15px);"><a href="Top.html">HOT!</a></li>
+						<li style="backdrop-filter: blur(15px);"><a href="submitted.html">Watchlist</a></li>
+						<li style="backdrop-filter: blur(15px);"><a href="flip.html">Flip</a></li>
+					</div>
+				</div>
+				<div class="header-background"></div>
+				<div style="padding: 50px">
+				</header>
+			</nav>
+			<div id="sol-volume" class="sol-volume">Volume: Loading...</div>
+			<div id="sol-price" class="sol-price">Sol: Loading...</div>
+			<h2>Wolf call Plz...</h2>
+			<img src="optimized-image.jpg" id="img" alt="Unsplash Image" style="margin: 0 auto; mix-blend-mode: soft-light; display: flex; transform: translate(10px, -30px); width: 600px; height: 300px;" loading="lazy">
+
+
+		</section>
+		<div class="container form-container">
+			<form action="" method="post">
+				<div class="row">
+					<div class="col-25">
+						<label for="fp">Name</label>
+					</div>
+					<div class="col-75">
+						<input type="text" id="name" name="name" placeholder="Enter the Name" autocomplete="off" data-original-name="">
+						<ul id="autocomplete-list"></ul>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-25">
+						<label for="fp">Fp</label>
+					</div>
+					<div class="col-75">
+						<input type="text" id="fp" name="fp" placeholder="Enter Fp value" autocomplete="off">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-25">
+						<label for="listed">Listed</label>
+					</div>
+					<div class="col-75">
+						<input type="text" id="listed" name="listed" placeholder="Enter Listed value" autocomplete="off">
+					</div>
+				</div>
+
+				<!--           EP           -->
+
+				<div class="row">
+					<div class="col-25">
+						<label for="ep" id="open-popup">EP</label>
+					</div>
+
+					<div id="popup-container">
+						<div id="popup-box">
+							<iframe id="myIframe" style="border-radius: 5%; width: 100%; height: 100%" src="https://magiceden.io/marketplace/degods?activeTab=stats"></iframe>
+							<button id="close-popup" class="close-button" style="position: fixed;">X</button>
+							<div class="slider-container">
+								<div id="range-slider"></div>
+								<div class="slider-labels">
+									<span>0</span>
+									<span>25</span>
+									<span>50</span>
+									<span>75</span>
+									<span>100</span>
+								</div>
+							</div>
+							<div class="slider-container">
+								<div id="range-slider-charts"></div>
+								<div class="slider-labels">
+									<span>0</span>
+									<span>25</span>
+									<span>50</span>
+									<span>75</span>
+									<span>100</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-75">
+						<input type="text" id="ep" name="ep" placeholder="Enter EP range" autocomplete="off">
+					</div>
+				</div>
+
+				<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+				<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+				
+				<!-- sliders -->
+
+				<script type="text/javascript" src="sliders.js"></script> 
+
+				<!-- sliders -->
+
+
+
+
+				<!--           EP           -->
+
+
+
+				<div class="row">
+					<div class="col-25">
+						<label for="risks">Risks</label>
+					</div>
+					<div class="col-75">
+						<textarea id="risks" name="risks" placeholder="Enter Risks" autocomplete=""></textarea>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-25">
+						<label for="description"><a href="#" id="project-description-link" target="out" style="color: inherit;text-decoration: none;">Project Description</a></label>
+					</div>
+
+
+
+					<!-- twitter search -->
+
+					<script type="text/javascript" src="twitter_search.js"></script>
+
+					<!-- twitter search -->
+
+
+
+					<div class="col-75">
+						<textarea id="description" name="description" placeholder="Enter Project Description" autocomplete="off"></textarea>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-25">
+						<label for="charts">Charts</label>
+					</div>
+					<div class="col-75">
+						<textarea type="text"  id="charts" name="charts" placeholder="Enter Charts" autocomplete="off"></textarea>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-25">
+						<label for="links">Links</label>
+					</div>
+					<div class="col-75">
+						<input type="text" id="links" name="links" placeholder="Enter Links">
+					</div>
+				</div>
+
+				<!-- Add the emojis and hide them initially -->
+				<div class="hide">
+					<label id="rocket-emoji" style="margin: 10px; cursor: pointer;">🚀</label>
+					<label id="recycle-emoji" style="margin: 10px; cursor: pointer;">♻️</label>
+				</div>
+
+
+
+				<!-- Button -->
+				<div class="row">
+					<button id=submit type="submit" onclick="updateIframe()">Submit</button>
+				
+					<script>
+					  // Define the saveFormData function here
+					  function saveFormData() {
+					    const formData = {
+					      name: document.getElementById('name').value,
+					      fp: document.getElementById('fp').value,
+					      listed: document.getElementById('listed').value,
+					      ep: document.getElementById('ep').value,
+					      risks: document.getElementById('risks').value,
+					      description: document.getElementById('description').value,
+					      charts: document.getElementById('charts').value,
+					      links: document.getElementById('links').value,
+					    };
+
+					    const savedForms = JSON.parse(localStorage.getItem('savedForms') || '[]');
+					    savedForms.push(formData);
+					    localStorage.setItem('savedForms', JSON.stringify(savedForms));
+
+					    // Navigate to the submitted.html page after saving the form data
+
+
+
+
+
+
+					    //////////
+					    // window.location.href = 'submitted.html';
+					  }
+
+					  // Add event listener to the submit button
+					  document.getElementById('submit').addEventListener('click', saveFormData);
+					</script>
+
+
+				</div>
+				<!-- Button -->
+
+			</form>
+
+
+
+			<!-- Result show div -->
+
+			<div onclick="copyFormInputs()" class="copyResult">
+				<h3 class="result">Results:</h3>
+
+				<p class="result1"> From the  <span id="result-emoji"></span> chapter:</p>
+				<p class="result1"> Name: <span id="result-emoji1"></span><span id="result-name"></span></p>
+				<p class="result1">Fp value: <span id="result-fp"></span></p>
+				<p class="result1">Listed value: <span id="result-listed"></span></p>
+				<p class="result1">EP range: <span id="result-ep"></span></p>
+				<p class="result1">Risks: <span id="result-risks"></span></p>
+				<p class="result1">Project Description: <span id="result-description"></span></p>
+				<p class="result1">Charts: <span id="result-charts"></span></p>
+				<p class="result1" style="padding-bottom: 32px;">Link: <span id="result-links"></span></p>
+
+
+			</div>
+
+			<!-- Result show div -->
+
+
+		</div>
+	</div>
+</div>
+
+
+<button class="result" type=submit1 onclick="copyFormInputs2()" style="margin-left:49% ">Result</button>
+<div class="footer">
+	© 2023 NFT Calling. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+</div>
+
+
+
+<!-- The name appearence on-click  and  the image change-->
+
+<script type="text/javascript" src="nameOnclick_unsplash.js"></script>
+
+<!-- The name appearence on-click  and  the image change-->
+
+
+
+<!-- Pulling the fp out of name  -->
+
+<script src="auto.js" defer></script>
+
+<!-- Pulling the fp out of name  -->
+
+
+
+<!-- Sol and volume api  -->
+
+<script src="sol_and_volume_api.js" defer></script>
+
+<!-- Sol and volume api  -->
+
+
+<!-- Show result  -->
+
+<script src="result_show.js" defer></script>
+
+<!-- Show result  -->
+
+
+
+<!-- Copy button -->
+
+<script src="copy_button.js" defer></script>
+
+<!-- Copy button -->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js" defer></script>
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
