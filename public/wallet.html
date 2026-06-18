@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wallet · NFT Call Builder</title>
+  <link rel="icon" href="img/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site">
+    <a class="brand" href="/"><img src="img/logo.png" alt="">NFT Call Builder</a>
+    <nav class="tabs" aria-label="Pages">
+      <a href="/">Call builder</a>
+      <a href="wallet.html" aria-current="page">Wallet</a>
+    </nav>
+    <div class="ticker" id="ticker" aria-live="polite">Loading market data…</div>
+  </header>
+
+  <main>
+    <h1>Wallet</h1>
+    <p class="lede">See the NFTs held by any public Solana address. Nothing is stored except the last address, in this browser.</p>
+
+    <form class="wallet-form" id="wallet-form">
+      <label for="address" class="sr-only">Solana wallet address</label>
+      <input type="text" id="address" placeholder="Paste a Solana wallet address" spellcheck="false" autocomplete="off">
+      <button class="primary" type="submit">Load</button>
+    </form>
+    <div id="notice" class="notice error" hidden></div>
+    <div id="grid" class="nft-grid"></div>
+    <div class="actions"><button class="ghost" id="more" hidden type="button">Load more</button><span id="count" class="field-note"></span></div>
+  </main>
+
+  <script type="module" src="js/wallet.js"></script>
+</body>
+</html>

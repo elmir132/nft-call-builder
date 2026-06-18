@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NFT Call Builder</title>
+  <link rel="icon" href="img/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site">
+    <a class="brand" href="/"><img src="img/logo.png" alt="">NFT Call Builder</a>
+    <nav class="tabs" aria-label="Pages">
+      <a href="/" aria-current="page">Call builder</a>
+      <a href="wallet.html">Wallet</a>
+    </nav>
+    <div class="ticker" id="ticker" aria-live="polite">Loading market data…</div>
+  </header>
+
+  <main>
+    <h1>Build a call</h1>
+    <p class="lede">Pick a Solana NFT collection, review the live floor price, set an entry range, and copy a formatted post. <span id="list-status" class="field-note"></span></p>
+
+    <form id="builder" class="grid" autocomplete="off" onsubmit="return false">
+      <section class="card" aria-labelledby="h-collection">
+        <h2 id="h-collection">Collection</h2>
+
+        <label for="name">Name or symbol</label>
+        <div class="search">
+          <input type="text" id="name" role="combobox" aria-expanded="false" aria-controls="suggestions" aria-autocomplete="list" placeholder="Start typing, e.g. degods">
+          <ul id="suggestions" class="suggestions" role="listbox" hidden></ul>
+        </div>
+        <div id="selected" class="selected"></div>
+        <div id="notice" class="notice" hidden></div>
+
+        <div class="row">
+          <div><label for="fp">Floor price (SOL)</label><input type="text" id="fp" inputmode="decimal"></div>
+          <div><label for="listed">Listed</label><input type="text" id="listed" inputmode="numeric"></div>
+        </div>
+
+        <label>Entry price (EP), SOL</label>
+        <div class="row">
+          <input type="text" id="ep-low" inputmode="decimal" aria-label="Entry price from" placeholder="from">
+          <input type="text" id="ep-high" inputmode="decimal" aria-label="Entry price to" placeholder="to">
+        </div>
+        <input type="hidden" id="ep">
+        <div class="field-note">Filled automatically as the floor price ±20%. Edit either end.</div>
+
+        <label>Chapter</label>
+        <div class="chapter" role="radiogroup" aria-label="Chapter">
+          <input type="radio" name="chapter" id="ch-rocket" value="rocket" checked><label for="ch-rocket">🚀 Rocket</label>
+          <input type="radio" name="chapter" id="ch-reinvest" value="reinvest"><label for="ch-reinvest">♻️ Re-invest</label>
+        </div>
+
+        <label>RSI range</label>
+        <div class="rsi">
+          <div><input type="range" id="rsi-low" min="0" max="100" value="40" aria-label="RSI above"><div>above <output id="rsi-low-out">40</output></div></div>
+          <div><input type="range" id="rsi-high" min="0" max="100" value="80" aria-label="RSI below"><div>below <output id="rsi-high-out">80</output></div></div>
+        </div>
+
+        <label for="risks">Risks</label>
+        <textarea id="risks" placeholder="What could go wrong?"></textarea>
+
+        <label for="description"><a id="desc-link" href="#" target="_blank" rel="noopener noreferrer">Project description</a> <span class="field-note">(link searches Twitter for the name)</span></label>
+        <textarea id="description"></textarea>
+
+        <label for="charts">Charts</label>
+        <textarea id="charts"></textarea>
+        <div class="field-note">Starts from the RSI range; type here to override.</div>
+
+        <label for="link">Link</label>
+        <input type="text" id="link">
+
+        <details>
+          <summary>Footer (added to the end of the post, remembered in this browser)</summary>
+          <label for="footer" class="sr-only">Footer</label>
+          <textarea id="footer" placeholder="For example a link to your channel"></textarea>
+        </details>
+      </section>
+
+      <section class="card" aria-labelledby="h-preview">
+        <h2 id="h-preview">Post</h2>
+        <pre id="preview" aria-live="polite"></pre>
+        <div class="actions">
+          <button type="button" class="primary" id="copy">Copy post</button>
+          <button type="button" class="ghost" id="reset">Reset</button>
+          <span id="copy-status" role="status"></span>
+        </div>
+        <p class="field-note">Market data comes from the public Magic Eden API through this app's local server. Not financial advice.</p>
+      </section>
+    </form>
+  </main>
+
+  <script type="module" src="js/builder.js"></script>
+</body>
+</html>

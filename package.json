@@ -1,0 +1,13 @@
+{
+  "name": "nft-call-builder",
+  "version": "1.0.0",
+  "description": "Build and copy a formatted Solana NFT 'call' post from live Magic Eden data.",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  }
+}
