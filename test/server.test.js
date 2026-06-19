@@ -288,3 +288,116 @@ test("a collection missing from the list still works by symbol, with a readable 
     assert.equal(body.floorSol, 1.419);
   });
 });
+
+// ---- new collections, launchpad, watchlist -------------------------------------------------
+const newBody = {
+  collections: [
+    { symbol: "older", name: "Older", description: "o", image: "https://i/o.png", totalItems: 10, createdAt: "2026-10-05T10:00:00.000Z", blockchain: "solana", isVerified: true, junk: 1 },
+    { symbol: "newest", name: "", description: null, image: "https://i/n.png", totalItems: 0, createdAt: "2026-10-05T12:00:00.000Z", blockchain: "solana" },
+    { symbol: "eth_thing", name: "Eth", createdAt: "2026-10-05T13:00:00.000Z", blockchain: "ethereum" },
+    { name: "no symbol" },
+  ],
+};
+
+test("new collections: newest first, solana only, fields cleaned, cached", async () => {
+  const log = [];
+  const fetchImpl = fakeFetch([[`${me}/new_collections`, () => json(newBody)]], log);
+  await run({ fetchImpl, meBase: me }, async ({ get }) => {
+    const body = await (await get("/api/new")).json();
+    assert.deepEqual(body.results.map((r) => r.symbol), ["newest", "older"]);
+    assert.equal(body.results[0].name, "newest", "empty name falls back to the symbol");
+    assert.equal(body.results[0].description, "");
+    assert.equal(body.results[1].verified, true);
+    assert.equal("junk" in body.results[1], false);
+    assert.equal((await (await get("/api/new?limit=1")).json()).results.length, 1);
+    assert.equal(log.length, 1, "feed is cached");
+  });
+});
+
+test("new collections: upstream failure is a 502", async () => {
+  const fetchImpl = fakeFetch([[`${me}/new_collections`, () => json({}, 500)]]);
+  await run({ fetchImpl, meBase: me }, async ({ get }) => {
+    assert.equal((await get("/api/new")).status, 502);
+  });
+});
+
+test("launchpad: mapped and ordered by launch date, newest first", async () => {
+  const rows = [
+    { symbol: "a", name: "A", price: 1.5, size: 495, launchDatetime: "2026-02-20T09:30:00.000Z", featured: true, image: "https://i/a.png", description: "x" },
+    { symbol: "b", name: "B", price: null, size: 10, launchDatetime: "2026-09-01T00:00:00.000Z" },
+  ];
+  const fetchImpl = fakeFetch([[`${me}/v2/launchpad/collections`, () => json(rows)]]);
+  await run({ fetchImpl, meBase: me }, async ({ get }) => {
+    const body = await (await get("/api/launchpad")).json();
+    assert.deepEqual(body.results.map((r) => r.symbol), ["b", "a"]);
+    assert.equal(body.results[1].priceSol, 1.5);
+    assert.equal(body.results[0].priceSol, null);
+    assert.equal(body.results[1].featured, true);
+  });
+});
+
+test("a collection that only appears in the new feed still opens in the builder", async () => {
+  const fetchImpl = fakeFetch([
+    [`${me}/new_collections`, () => json(newBody)],
+    [`${me}/v2/collections/newest/stats`, () => json({ symbol: "newest", listedCount: 0 })],
+  ]);
+  await run({ fetchImpl, meBase: me }, async ({ get }) => {
+    assert.equal((await get("/api/collection/newest")).status, 404, "unknown before the feed was seen");
+    await get("/api/new");
+    const res = await get("/api/collection/newest");
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.image, "https://i/n.png");
+    assert.equal(body.floorSol, null);
+  });
+});
+
+test("watchlist: returns one row per symbol, dedupes, and marks problems per row", async () => {
+  const fetchImpl = fakeFetch([
+    [`${me}/v2/collections?`, () => json(collectionRows)],
+    [`${me}/v2/collections/degods/stats`, () => json({ floorPrice: 2e9, listedCount: 5, avgPrice24hr: 3e9, volume7d: 4e9 })],
+    [`${me}/v2/collections/okay_bears/stats`, () => json({}, 503)],
+    [`${me}/v2/collections/ghost/stats`, () => json({ symbol: "ghost", listedCount: 0 })],
+  ]);
+  await run({ fetchImpl, meBase: me }, async ({ app, get }) => {
+    await app.loadCollections();
+    const body = await (await get("/api/watchlist?symbols=degods,ghost,DEGODS,okay_bears")).json();
+    assert.deepEqual(body.results.map((r) => r.symbol), ["degods", "ghost", "okay_bears"]);
+    assert.deepEqual([body.results[0].floorSol, body.results[0].listed, body.results[0].volume7dSol], [2, 5, 4]);
+    assert.equal(body.results[1].error, "not found");
+    assert.equal(body.results[2].floorSol, null, "stats failed but known metadata still returned");
+    assert.equal(body.results[2].name, "Okay Bears");
+  });
+});
+
+test("watchlist: validates input and limits the number of symbols", async () => {
+  const log = [];
+  await run({ fetchImpl: fakeFetch([], log), meBase: me }, async ({ get }) => {
+    assert.deepEqual(await (await get("/api/watchlist")).json(), { results: [] });
+    assert.equal((await get("/api/watchlist?symbols=ok,bad%20one")).status, 400);
+    const many = Array.from({ length: 21 }, (_, i) => `c${i}`).join(",");
+    assert.equal((await get(`/api/watchlist?symbols=${many}`)).status, 400);
+    assert.equal(log.length, 0);
+  });
+});
+
+test("watchlist: never runs more than four lookups at once", async () => {
+  let active = 0;
+  let peak = 0;
+  const fetchImpl = async (url) => {
+    if (String(url).includes("/stats")) {
+      active += 1;
+      peak = Math.max(peak, active);
+      await new Promise((r) => setTimeout(r, 15));
+      active -= 1;
+      return json({ floorPrice: 1e9, listedCount: 1 });
+    }
+    return json([]);
+  };
+  const symbols = Array.from({ length: 12 }, (_, i) => `c${i}`).join(",");
+  await run({ fetchImpl, meBase: me }, async ({ get }) => {
+    const body = await (await get(`/api/watchlist?symbols=${symbols}`)).json();
+    assert.equal(body.results.length, 12);
+    assert.ok(peak <= 4 && peak > 1, `peak concurrency was ${peak}`);
+  });
+});

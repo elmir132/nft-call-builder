@@ -20,3 +20,6 @@ export const getCollection = (symbol) => getJson(`/api/collection/${encodeURICom
 export const getWallet = (address, offset = 0) => getJson(`/api/wallet/${encodeURIComponent(address)}?offset=${offset}&limit=20`);
 export const getTicker = () => getJson("/api/ticker");
 export const getStatus = () => getJson("/api/status");
+export const getNew = () => getJson("/api/new?limit=24");
+export const getLaunchpad = () => getJson("/api/launchpad?limit=24");
+export const getWatchlist = (symbols) => getJson(`/api/watchlist?symbols=${encodeURIComponent(symbols.join(","))}`);

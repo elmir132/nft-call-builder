@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Watchlist · NFT Call Builder</title>
+  <link rel="icon" href="img/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site">
+    <a class="brand" href="/"><img src="img/logo.png" alt="">NFT Call Builder</a>
+    <nav class="tabs" aria-label="Pages">
+      <a href="/">Call builder</a>
+      <a href="new.html">New</a>
+      <a href="watchlist.html" aria-current="page">Watchlist</a>
+      <a href="wallet.html">Wallet</a>
+    </nav>
+    <div class="ticker" id="ticker" aria-live="polite">Loading market data…</div>
+  </header>
+
+  <main>
+    <h1>Watchlist</h1>
+    <p class="lede">Track collections side by side. Add a symbol or paste a Magic Eden link; the list is saved in this browser (up to 20).</p>
+
+    <form class="wallet-form" id="add-form">
+      <label for="symbol" class="sr-only">Collection symbol or Magic Eden link</label>
+      <input type="text" id="symbol" placeholder="e.g. mad_lads or https://magiceden.io/marketplace/mad_lads" spellcheck="false" autocomplete="off">
+      <button class="primary" type="submit">Add</button>
+    </form>
+    <div id="notice" class="notice error" hidden></div>
+
+    <div class="actions">
+      <button type="button" class="ghost" id="refresh">Refresh</button>
+      <span id="updated" class="field-note"></span>
+    </div>
+    <div class="table-wrap">
+      <table id="table">
+        <thead>
+          <tr>
+            <th scope="col"><button type="button" data-sort="name">Collection</button></th>
+            <th scope="col" class="num"><button type="button" data-sort="floorSol">Floor (SOL)</button></th>
+            <th scope="col" class="num"><button type="button" data-sort="listed">Listed</button></th>
+            <th scope="col" class="num"><button type="button" data-sort="avg24hSol">24h avg (SOL)</button></th>
+            <th scope="col" class="num"><button type="button" data-sort="volume7dSol">7d volume (SOL)</button></th>
+            <th scope="col"><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <p id="empty" class="empty" hidden>Your watchlist is empty. Add a collection above.</p>
+  </main>
+
+  <script type="module" src="js/watchlist.js"></script>
+</body>
+</html>

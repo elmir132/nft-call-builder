@@ -4,7 +4,9 @@ A small web tool for writing a **Solana NFT "call"**: a short, consistently form
 
 ![Call builder showing Mad Lads with live Magic Eden data](docs/screenshot.png)
 
-*Screenshot taken from the running app; the market numbers are a snapshot.*
+![Watchlist sorted by 7-day volume](docs/watchlist.png)
+
+*Screenshots taken from the running app; the market numbers are a snapshot.*
 
 ## What it does
 
@@ -13,9 +15,11 @@ A small web tool for writing a **Solana NFT "call"**: a short, consistently form
 - **RSI range:** two sliders; the upper bound sets a verdict (below 25 "Perfect Entry", 25 to 49 "Good", 50 to 74 "Medium", 75 and above "Bad") that is written into the Charts field once you move a slider.
 - **Chapter:** Rocket 🚀 or Re-invest ♻️, which changes the heading of the post.
 - **Post preview and copy:** the post updates as you type and copies to the clipboard. Empty sections are left out. An optional footer, remembered in your browser, is added at the end.
+- **New collections:** the latest collections created on Magic Eden (newest first, from the marketplace's own feed) and the **Launchpad** drops with launch date, mint price and size. Each card has a "Build a call" button that opens the builder on that collection.
+- **Watchlist:** track up to 20 collections side by side (floor, listed, 24-hour average, 7-day volume), sortable by any column. Add a symbol or paste a Magic Eden link; the list is saved in your browser.
 - **Wallet page:** the NFTs held by any public Solana address, with paging.
 - **Ticker:** SOL price and the Crypto Fear & Greed index.
-- `?collection=<symbol>` and `?address=<wallet>` in the URL open a collection or a wallet directly.
+- `?collection=<symbol>`, `?address=<wallet>` and `?symbols=a,b,c` (watchlist) in the URL open a collection, a wallet or a starting watchlist directly.
 
 The post is written in the Markdown flavour of the Telegram channel this was made for (`**bold**`, `__underline__`, `_italic_`). Other apps render it differently.
 
@@ -42,6 +46,9 @@ Browsers cannot call the Magic Eden API directly because it sends no CORS header
 |---|---|
 | `GET /api/collections?q=` | search the cached collection list |
 | `GET /api/collection/:symbol` | metadata from the list plus live stats, converted to SOL |
+| `GET /api/new` | newest collections from the marketplace feed |
+| `GET /api/launchpad` | launchpad drops, newest launch first |
+| `GET /api/watchlist?symbols=a,b` | stats for up to 20 collections, four lookups at a time |
 | `GET /api/wallet/:address` | NFTs for an address, paged |
 | `GET /api/ticker` | SOL price (Jupiter, falling back to CoinGecko) and Fear & Greed |
 | `GET /api/status` | how far the collection list has loaded |
@@ -49,10 +56,13 @@ Browsers cannot call the Magic Eden API directly because it sends no CORS header
 ```
 server.js            the server (no dependencies)
 public/index.html    call builder
+public/new.html      new collections and launchpad
+public/watchlist.html  watchlist table
 public/wallet.html   wallet viewer
 public/js/lib/format.js   pure logic: formatting, entry range, RSI text, the post itself
+public/js/lib/table.js    pure logic: symbol parsing, watchlist, sorting, relative dates
 public/js/*.js       browser code: UI wiring and API client
-test/                32 tests
+test/                48 tests
 ```
 
 Design notes:
@@ -70,20 +80,23 @@ The first version of this project was a static prototype I wrote in 2023 (May to
 | Browser called Magic Eden directly through a public CORS relay | Local proxy server |
 | `/volumes` endpoint for 24h volume | gone (the endpoint returns 404), so the ticker shows SOL price and Fear & Greed instead |
 | `price.jup.ag/v1` for the SOL price | no longer reachable; uses Jupiter's current price API with a CoinGecko fallback |
-| "Top" and "Hot" collection pages | removed: `popular_collections` returns an empty list for every time range |
+| "Hot" page: feed of new collections (and a leftover OpenSea wallet viewer) | the **New** page, using the feed that still works, plus a **Launchpad** tab; the OpenSea viewer is gone because OpenSea removed that API |
+| "Top" page: popular collections by time range (1h, 1d, 7d, 30d), cards linking into the call form | the popular-collections endpoint now returns an empty list for every time range, so there is no data to rank. Replaced by the **Watchlist**, which ranks the collections you choose by 7-day volume; each row opens the builder |
 | Wallet address and a Telegram invite link written into the code | wallet address is an input, and the footer is a setting |
 | Entry range of floor ± 2 SOL (nonsense for a 0.3 SOL collection) | floor ± 20% |
 | Loaded the whole collection list in the browser, with a 7-second delay hack | loaded once by the server and cached |
 | Page built from API text with `innerHTML` | `textContent` only, plus a Content-Security-Policy |
-| No tests | 32 tests |
+| No tests | 48 tests |
 
 The previous prototype is also in this account as the archived `Calling-App` repository.
 
 ## Limitations
 
 - **The collection list is incomplete.** It has about 30,500 collections but leaves out some well-known ones (for example `degods`, `okay_bears` and `solana_monkey_business`). For those, type the exact symbol and press Enter: floor price, listed count and volume load, but the image and description do not. The single-collection metadata endpoint is rate-limited for unauthenticated clients, so there is no way around this without an API key.
+- **There is no market-wide "top collections" ranking any more.** The marketplace stopped publishing the data the old Top page used, and ranking tens of thousands of collections one by one would exceed the rate limit. The watchlist ranks only the collections you add, and only by the 7-day volume the API provides (no 1h, 1d or 30d).
+- **The New feed is unfiltered.** It lists whatever users create on the marketplace, so expect spam, copies and scams (and the occasional offensive name). It is a discovery list, not a recommendation.
 - **It depends on third-party APIs** that can change or limit access again; the Magic Eden API allows about 180 requests a minute.
-- **The browser UI is not covered by automated tests.** The formatting logic and the server are (32 tests, no network needed), and the pages were checked in headless Chrome against the live APIs (the screenshot above), not by automated UI tests.
+- **The browser UI is not covered by automated tests.** The formatting logic and the server are (48 tests, no network needed), and the pages were checked in headless Chrome against the live APIs (the screenshot above), not by automated UI tests.
 - Not tested on a phone, though the layout is responsive.
 - Not financial advice. The RSI "verdicts" are a simple rule from the original tool, not analysis.
 

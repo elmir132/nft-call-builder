@@ -43,6 +43,8 @@ export function createApp(options = {}) {
     maxOffset = 200000,
     statsTtlMs = 30000,
     tickerTtlMs = 60000,
+    newTtlMs = 120000,
+    launchpadTtlMs = 300000,
     now = Date.now,
   } = options;
 
@@ -161,8 +163,22 @@ export function createApp(options = {}) {
   // ---- route handlers -----------------------------------------------------------------
   const lamports = (value) => (Number.isFinite(value) ? value / 1e9 : null);
 
+  // Metadata for a symbol: the full list first, then collections seen in the new/launchpad feeds
+  // (brand-new collections are not in the list yet).
+  function findMeta(symbol) {
+    const wanted = symbol.toLowerCase();
+    const inList = collections.find((c) => c.symbol.toLowerCase() === wanted);
+    if (inList) return inList;
+    for (const key of ["new", "launchpad"]) {
+      const feed = cache.get(`feed:${key}`)?.value ?? [];
+      const hit = feed.find((c) => c.symbol.toLowerCase() === wanted);
+      if (hit) return { symbol: hit.symbol, name: hit.name, description: hit.description ?? "", image: hit.image ?? "", twitter: hit.twitter ?? "", website: hit.website ?? "" };
+    }
+    return null;
+  }
+
   async function collectionDetail(symbol) {
-    const meta = collections.find((c) => c.symbol.toLowerCase() === symbol.toLowerCase()) ?? null;
+    const meta = findMeta(symbol);
     // Use the canonical symbol from the list when we have it: the marketplace API treats an
     // unknown symbol (for example a different capitalisation) as an empty collection.
     const canonical = meta?.symbol ?? symbol;
@@ -188,6 +204,79 @@ export function createApp(options = {}) {
       volume7dSol: lamports(stats?.volume7d),
       warning,
     };
+  }
+
+  const text = (v) => (typeof v === "string" ? v : "");
+
+  // Newly created collections: the Magic Eden feed the old "Hot" page used. Newest first.
+  async function newCollections(limit) {
+    const items = await cached("feed:new", newTtlMs, async () => {
+      const body = await upstream(`${meBase}/new_collections?edge_cache=true`);
+      const rows = Array.isArray(body?.collections) ? body.collections : [];
+      return rows
+        .filter((c) => c?.symbol && (c.blockchain === undefined || c.blockchain === "solana"))
+        .map((c) => ({
+          symbol: c.symbol,
+          name: text(c.name) || c.symbol,
+          description: text(c.description),
+          image: text(c.image),
+          totalItems: Number.isFinite(c.totalItems) ? c.totalItems : null,
+          createdAt: text(c.createdAt) || null,
+          twitter: text(c.twitter),
+          website: text(c.website),
+          verified: c.isVerified === true,
+        }))
+        .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+    });
+    return items.slice(0, limit);
+  }
+
+  // Launchpad drops (upcoming and past mints), newest launch first.
+  async function launchpad(limit) {
+    const items = await cached("feed:launchpad", launchpadTtlMs, async () => {
+      const rows = await upstream(`${meBase}/v2/launchpad/collections?offset=0&limit=40`);
+      if (!Array.isArray(rows)) throw new UpstreamError("unexpected launchpad response", 502);
+      return rows
+        .filter((c) => c?.symbol)
+        .map((c) => ({
+          symbol: c.symbol,
+          name: text(c.name) || c.symbol,
+          description: text(c.description),
+          image: text(c.image),
+          priceSol: Number.isFinite(c.price) ? c.price : null,
+          size: Number.isFinite(c.size) ? c.size : null,
+          launchAt: text(c.launchDatetime) || null,
+          featured: c.featured === true,
+        }))
+        .sort((a, b) => String(b.launchAt).localeCompare(String(a.launchAt)));
+    });
+    return items.slice(0, limit);
+  }
+
+  async function mapLimit(items, limit, fn) {
+    const results = new Array(items.length);
+    let next = 0;
+    async function worker() {
+      while (next < items.length) {
+        const index = next++;
+        results[index] = await fn(items[index]);
+      }
+    }
+    await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+    return results;
+  }
+
+  async function watchlist(symbols) {
+    return mapLimit(symbols, 4, async (symbol) => {
+      try {
+        const d = await collectionDetail(symbol);
+        if (!d) return { symbol, error: "not found" };
+        const { name, image, floorSol, listed, avg24hSol, volume7dSol } = d;
+        return { symbol: d.symbol, name, image, floorSol, listed, avg24hSol, volume7dSol };
+      } catch {
+        return { symbol, error: "unavailable" };
+      }
+    });
   }
 
   async function wallet(address, offset, limit) {
@@ -298,6 +387,27 @@ export function createApp(options = {}) {
         const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") ?? "20", 10) || 20, 1), 40);
         const offset = Math.max(parseInt(url.searchParams.get("offset") ?? "0", 10) || 0, 0);
         return send(res, 200, await wallet(address, offset, limit));
+      }
+
+      if (pathname === "/api/new") {
+        const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") ?? "24", 10) || 24, 1), 50);
+        return send(res, 200, { results: await newCollections(limit) });
+      }
+
+      if (pathname === "/api/launchpad") {
+        const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") ?? "24", 10) || 24, 1), 40);
+        return send(res, 200, { results: await launchpad(limit) });
+      }
+
+      if (pathname === "/api/watchlist") {
+        const raw = String(url.searchParams.get("symbols") ?? "").split(",").map((v) => v.trim()).filter(Boolean);
+        const seen = new Set();
+        const symbols = raw.filter((v) => !seen.has(v.toLowerCase()) && seen.add(v.toLowerCase()));
+        if (symbols.length === 0) return send(res, 200, { results: [] });
+        if (symbols.length > 20) return send(res, 400, { error: "at most 20 collections per request" });
+        const bad = symbols.filter((v) => !SYMBOL.test(v));
+        if (bad.length) return send(res, 400, { error: "invalid collection symbol" });
+        return send(res, 200, { results: await watchlist(symbols) });
       }
 
       if (pathname === "/api/ticker") return send(res, 200, await cached("ticker", tickerTtlMs, ticker));

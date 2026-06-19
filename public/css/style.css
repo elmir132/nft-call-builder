@@ -100,3 +100,30 @@ summary { cursor: pointer; color: var(--muted); font-size: 13px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 .nft img.broken { visibility: hidden; }
+
+/* New collections and watchlist */
+.segmented { display: inline-flex; gap: 4px; padding: 4px; background: var(--panel); border-radius: 10px; margin-bottom: 16px; }
+.segmented button { background: transparent; color: var(--muted); border: 0; padding: 7px 14px; border-radius: 8px; font: inherit; cursor: pointer; }
+.segmented button[aria-selected="true"] { background: var(--panel-2); color: var(--text); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.feed-card { display: flex; gap: 14px; background: var(--panel); border-radius: var(--radius); padding: 14px; }
+.feed-img { width: 84px; height: 84px; border-radius: 10px; object-fit: cover; flex: none; background: #343b63; }
+.feed-img.broken, .thumb.broken { visibility: hidden; }
+.feed-body { min-width: 0; flex: 1; }
+.feed-name { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.feed-meta { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.feed-desc { margin: 8px 0 0; font-size: 13px; color: #c9cde2; overflow-wrap: anywhere; }
+.feed-actions { display: flex; gap: 12px; margin-top: 10px; font-size: 13px; }
+a.primary-link { color: #fff; background: var(--accent); padding: 5px 10px; border-radius: 7px; text-decoration: none; font-weight: 600; }
+a.ghost-link { color: var(--muted); padding: 5px 0; }
+.table-wrap { overflow-x: auto; margin-top: 12px; }
+table { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: var(--radius); overflow: hidden; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #2d3355; }
+th button { background: none; border: 0; color: var(--muted); font: inherit; font-weight: 600; cursor: pointer; padding: 0; }
+th[aria-sort="ascending"] button::after { content: " ▲"; font-size: 10px; }
+th[aria-sort="descending"] button::after { content: " ▼"; font-size: 10px; }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+td.muted { color: var(--muted); }
+.name-cell { display: flex; align-items: center; gap: 10px; }
+button.small { padding: 4px 10px; font-size: 12px; }
+@media (max-width: 600px) { .feed-card { flex-direction: column; } }
